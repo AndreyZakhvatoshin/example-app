@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 
 class BookingService
 {
-    public static function hasOverlap($serviceId, $start, $end): bool
+    public function hasOverlap($serviceId, $start, $end): bool
     {
         return Booking::query()->where('service_id', $serviceId)
             ->where(function ($query) use ($start, $end) {
@@ -35,7 +35,7 @@ class BookingService
             
             DB::transaction(function () use ($data, $start, $end, $service, &$booking) {
                 // Проверяем пересечения бронирований
-                $hasOverlap = self::hasOverlap($data['service_id'], $start, $end);
+                $hasOverlap = $this->hasOverlap($data['service_id'], $start, $end);
 
                 if ($hasOverlap) {
                     throw new \Exception('Слот занят');

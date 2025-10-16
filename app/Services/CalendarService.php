@@ -8,6 +8,13 @@ use Illuminate\Support\Facades\Config;
 
 class CalendarService
 {
+    private BookingService $bookingService;
+
+    public function __construct(BookingService $bookingService)
+    {
+        $this->bookingService = $bookingService;
+    }
+
     public function getWeekDays(): array
     {
         $now = Carbon::now(Config::get('business.timezone'));
@@ -45,7 +52,7 @@ class CalendarService
 
         while ($startHour->lte($endHour->subMinutes($durationMinutes + 30))) {
             $endSlot = $startHour->clone()->addMinutes($durationMinutes + 30);
-            if (!BookingService::hasOverlap($serviceId, $startHour, $endSlot)) {
+            if (!$this->bookingService->hasOverlap($serviceId, $startHour, $endSlot)) {
                 $slots[] = $startHour->format('H:i');
             }
             $startHour->addMinutes($step);
